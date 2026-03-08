@@ -1,0 +1,44 @@
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Pytest
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Raw datasets (too large)
+data/raw/Reviews.csv
+data/raw/database.sqlite
+data/raw/hashes.txt
+data/fine_foods.zip
+
+# Project artifacts
+models/classifier.pkl
+models/vectorizer.pkl
+models/*.png
+monitoring/drift_report.html
+data/processed/
+.eggs/
+*.egg-info/
+dist/
+build/
