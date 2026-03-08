@@ -1,54 +1,27 @@
 """
-drift_report.py — Evidently AI drift and classification performance report.
+Evidently AI drift and classification performance report.
 
-Run (after training):
+Generates an HTML report comparing model performance and data drift between
+two dataset windows: reference (baseline) and current (new batch).
+
+Since the training dataset is static, the test set is split in half:
+- First half: reference window (simulates baseline at deploy time)
+- Second half: current window (simulates new incoming batch)
+
+The report monitors four engineered features:
+  - text_length: character count
+  - word_count: number of tokens
+  - avg_word_length: mean token length
+  - unique_word_ratio: vocabulary diversity
+
+These features are used because raw TF-IDF sparse matrices are incompatible
+with Evidently's drift detectors.
+
+Usage:
     python monitoring/drift_report.py
 
-Outputs:
+Output:
     monitoring/drift_report.html
-
-Design: why the test-set split approach
-----------------------------------------
-This project uses a static dataset (Amazon Fine Food Reviews), so there is
-no live stream of new reviews to monitor against.  To demonstrate the
-monitoring infrastructure meaningfully, we simulate the production pattern:
-
-  Production reality (what this mimics)
-  ──────────────────────────────────────
-  1.  Model is trained and deployed.  Training/validation data becomes the
-      "reference" — the expected distribution.
-  2.  New reviews arrive over time (daily / weekly batches).
-  3.  Each batch is the "current" window.
-  4.  Evidently compares current vs reference to detect:
-        - Data drift   : input feature distributions have shifted
-        - Model decay  : precision / recall has degraded on the new batch
-  5.  If drift is detected, a retraining pipeline is triggered.
-
-  What we do here (static dataset simulation)
-  ─────────────────────────────────────────────
-  We take the held-out test set (never seen during training) and split it
-  in half chronologically:
-    - First half  → reference  (simulates the "baseline" window at deploy time)
-    - Second half → current    (simulates a later batch of incoming reviews)
-
-  Because both halves come from the same distribution, drift metrics will be
-  low — which is the correct and expected result for a stable dataset.  The
-  value is in having the pipeline in place: in a real deployment you would
-  replace these two DataFrames with your actual reference and production data.
-
-Feature strategy
-----------------
-The raw TF-IDF matrix (50 000+ sparse dimensions) is not suitable for
-Evidently's statistical drift tests.  Instead we engineer four interpretable
-numerical features from the review text:
-  - text_length       character count
-  - word_count        number of whitespace tokens
-  - avg_word_length   mean characters per token
-  - unique_word_ratio type-token ratio (vocabulary diversity)
-
-These proxy features capture meaningful distributional properties of the text
-(e.g., a sudden influx of very short / spam reviews would show up here) while
-remaining compatible with Evidently's per-column drift detectors.
 """
 
 import pathlib
@@ -123,10 +96,8 @@ def main() -> None:
     print("Building report DataFrame…")
     report_df = build_report_df(test_csv)
 
-    # Split into reference / current.
-    # In production: replace reference_df with your training-period data and
-    # current_df with the latest batch of incoming reviews.  Here we use
-    # two halves of the test set as a stand-in for that production pattern.
+    # Split test set into reference (first half) and current (second half) windows
+    # In production, replace with actual training-period baseline and new batch data
     mid = len(report_df) // 2
     reference_df = report_df.iloc[:mid].reset_index(drop=True)   # "baseline"
     current_df = report_df.iloc[mid:].reset_index(drop=True)      # "new batch"

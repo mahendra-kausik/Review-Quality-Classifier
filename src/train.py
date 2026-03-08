@@ -118,9 +118,8 @@ def main() -> None:
         "Logistic Regression": LogisticRegression(
             max_iter=1000, C=1.0, solver="lbfgs", random_state=42
         ),
-        # CalibratedClassifierCV wraps LinearSVC so it gains predict_proba
-        # via Platt scaling — ensures ROC curves for both models use the same
-        # probability scale rather than mixing probabilities with raw SVM margins.
+        # CalibratedClassifierCV wraps LinearSVC with Platt scaling
+        # to produce calibrated probability estimates for ROC-AUC calculation
         "Linear SVC (calibrated)": CalibratedClassifierCV(
             LinearSVC(C=0.5, max_iter=2000, random_state=42)
         ),

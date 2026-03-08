@@ -2,8 +2,6 @@
 
 Binary sentiment classifier (positive / negative) for product reviews, built with a production-style MLOps layer: unit tests and data-drift monitoring.
 
-Built as a portfolio project targeting content moderation and data-pipeline validation roles.
-
 ---
 
 ## Problem Statement
@@ -65,7 +63,7 @@ pip install -r requirements.txt
 python -c "import nltk; nltk.download('stopwords')"
 ```
 
-**Dataset:** Download **Amazon Fine Food Reviews** from [Kaggle](https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews) and place `Reviews.csv` and `database.sqlite` in `data/raw/`.
+**Dataset:** Download **Amazon Fine Food Reviews** from [Here](https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews) and place `Reviews.csv` and `database.sqlite` in `data/raw/`.
 
 ---
 
