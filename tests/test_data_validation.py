@@ -48,7 +48,7 @@ def test_labels_are_binary(raw_df):
 
 
 def test_class_balance(raw_df):
-    """Positive/negative ratio should not exceed 80/20."""
+    """Positive/negative ratio should not exceed 85/15."""
     counts = raw_df["label"].value_counts(normalize=True)
     majority_share = counts.max()
     assert majority_share <= 0.85, f"Class imbalance too severe: {majority_share:.2%}"
